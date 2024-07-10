@@ -1,0 +1,161 @@
+# Based on https://github.com/firezone/firezone/blob/4ac447ad1f0c65db3660f4311ad7c1d9040fa0e1/docker-compose.yml
+# And https://github.com/firezone/firezone/blob/4ac447ad1f0c65db3660f4311ad7c1d9040fa0e1/terraform/environments/production/portal.tf
+
+services:
+  web:
+    image: ${DOCKER_IMAGE_PREFIX:?err}/web:${DOCKER_TAG:?err}
+    hostname: web.cluster.local
+    container_name: firezone-web
+    ports:
+      - 127.0.0.1:8080:8080/tcp
+    environment:
+      # Database
+      DATABASE_HOST: postgres
+      DATABASE_NAME: ${POSTGRES_DB:?err}
+      DATABASE_USER: ${POSTGRES_USER:?err}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:?err}
+      # Secrets
+      TOKENS_KEY_BASE: ${TOKENS_KEY_BASE:?err}
+      TOKENS_SALT: ${TOKENS_SALT:?err}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:?err}
+      LIVE_VIEW_SIGNING_SALT: ${LIVE_VIEW_SIGNING_SALT:?err}
+      COOKIE_SIGNING_SALT: ${COOKIE_SIGNING_SALT:?err}
+      COOKIE_ENCRYPTION_SALT: ${COOKIE_ENCRYPTION_SALT:?err}
+      # Erlang
+      ERLANG_DISTRIBUTION_PORT: 9000
+      ERLANG_CLUSTER_ADAPTER: "Elixir.Cluster.Strategy.Epmd"
+      ERLANG_CLUSTER_ADAPTER_CONFIG: '{"hosts":["api@api.cluster.local","web@web.cluster.local","domain@web.cluster.local"]}'
+      RELEASE_COOKIE: ${RELEASE_COOKIE:?err}
+      RELEASE_HOSTNAME: "web.cluster.local"
+      RELEASE_NAME: "web"
+      # Auth
+      AUTH_PROVIDER_ADAPTERS: ${AUTH_PROVIDER_ADAPTERS:?err}
+      # Feature Flags
+      FEATURE_FLOW_ACTIVITIES_ENABLED: "true"
+      FEATURE_SELF_HOSTED_RELAYS_ENABLED: "true"
+      FEATURE_POLICY_CONDITIONS_ENABLED: "true"
+      FEATURE_MULTI_SITE_RESOURCES_ENABLED: "true"
+      FEATURE_SIGN_UP_ENABLED: "true"
+      FEATURE_REST_API_ENABLED: "false"
+
+      # APP SPECIFIED
+      # Web Server
+      API_URL_OVERRIDE: wss://api.$DOMAIN
+      EXTERNAL_URL: https://app.$DOMAIN
+      PHOENIX_HTTP_WEB_PORT: "8080"
+      BACKGROUND_JOBS_ENABLED: "false"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f localhost:8080/healthz"]
+      start_period: 15s
+      interval: 15s
+      retries: 3
+      timeout: 5s
+    networks:
+      - app
+      - postgres
+
+  api:
+    image: ${DOCKER_IMAGE_PREFIX:?err}/api:${DOCKER_TAG:?err}
+    hostname: api.cluster.local
+    container_name: firezone-api
+    ports:
+      - 127.0.0.1:8081:8081/tcp
+    environment:
+      # Database
+      DATABASE_HOST: postgres
+      DATABASE_NAME: ${POSTGRES_DB:?err}
+      DATABASE_USER: ${POSTGRES_USER:?err}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:?err}
+      # Secrets
+      TOKENS_KEY_BASE: ${TOKENS_KEY_BASE:?err}
+      TOKENS_SALT: ${TOKENS_SALT:?err}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:?err}
+      LIVE_VIEW_SIGNING_SALT: ${LIVE_VIEW_SIGNING_SALT:?err}
+      COOKIE_SIGNING_SALT: ${COOKIE_SIGNING_SALT:?err}
+      COOKIE_ENCRYPTION_SALT: ${COOKIE_ENCRYPTION_SALT:?err}
+      # Erlang
+      ERLANG_DISTRIBUTION_PORT: 9000
+      ERLANG_CLUSTER_ADAPTER: "Elixir.Cluster.Strategy.Epmd"
+      ERLANG_CLUSTER_ADAPTER_CONFIG: '{"hosts":["api@api.cluster.local","web@web.cluster.local","domain@web.cluster.local"]}'
+      RELEASE_COOKIE: ${RELEASE_COOKIE:?err}
+      RELEASE_HOSTNAME: "api.cluster.local"
+      RELEASE_NAME: "api"
+      # Auth
+      AUTH_PROVIDER_ADAPTERS: ${AUTH_PROVIDER_ADAPTERS:?err}
+      # Feature Flags
+      FEATURE_FLOW_ACTIVITIES_ENABLED: "true"
+      FEATURE_SELF_HOSTED_RELAYS_ENABLED: "true"
+      FEATURE_POLICY_CONDITIONS_ENABLED: "true"
+      FEATURE_MULTI_SITE_RESOURCES_ENABLED: "true"
+      FEATURE_SIGN_UP_ENABLED: "true"
+      FEATURE_REST_API_ENABLED: "false"
+
+      # APP SPECIFIED
+      # Web Server
+      EXTERNAL_URL: https://api.$DOMAIN
+      PHOENIX_HTTP_API_PORT: "8081"
+      BACKGROUND_JOBS_ENABLED: "false"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f localhost:8081/healthz"]
+      start_period: 15s
+      interval: 15s
+      retries: 3
+      timeout: 5s
+    networks:
+      - app
+      - postgres
+
+  domain:
+    image: ${DOCKER_IMAGE_PREFIX:?err}/domain:${DOCKER_TAG:?err}
+    hostname: domain.cluster.local
+    container_name: firezone-domain
+    environment:
+      # Database
+      DATABASE_HOST: postgres
+      DATABASE_NAME: ${POSTGRES_DB:?err}
+      DATABASE_USER: ${POSTGRES_USER:?err}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:?err}
+      # Secrets
+      TOKENS_KEY_BASE: ${TOKENS_KEY_BASE:?err}
+      TOKENS_SALT: ${TOKENS_SALT:?err}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:?err}
+      LIVE_VIEW_SIGNING_SALT: ${LIVE_VIEW_SIGNING_SALT:?err}
+      COOKIE_SIGNING_SALT: ${COOKIE_SIGNING_SALT:?err}
+      COOKIE_ENCRYPTION_SALT: ${COOKIE_ENCRYPTION_SALT:?err}
+      # Erlang
+      ERLANG_DISTRIBUTION_PORT: 9000
+      ERLANG_CLUSTER_ADAPTER: "Elixir.Cluster.Strategy.Epmd"
+      ERLANG_CLUSTER_ADAPTER_CONFIG: '{"hosts":["api@api.cluster.local","web@web.cluster.local","domain@domain.cluster.local"]}'
+      RELEASE_COOKIE: ${RELEASE_COOKIE:?err}
+      RELEASE_HOSTNAME: "domain.cluster.local"
+      RELEASE_NAME: "domain"
+      # Auth
+      AUTH_PROVIDER_ADAPTERS: ${AUTH_PROVIDER_ADAPTERS:?err}
+      # Feature Flags
+      FEATURE_FLOW_ACTIVITIES_ENABLED: "true"
+      FEATURE_SELF_HOSTED_RELAYS_ENABLED: "true"
+      FEATURE_POLICY_CONDITIONS_ENABLED: "true"
+      FEATURE_MULTI_SITE_RESOURCES_ENABLED: "true"
+      FEATURE_SIGN_UP_ENABLED: "true"
+      FEATURE_REST_API_ENABLED: "false"
+
+      # APP SPECIFIED
+      # Web Server
+      EXTERNAL_URL: https://api.$DOMAIN
+      # Background Jobs
+      BACKGROUND_JOBS_ENABLED: "true"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f localhost:4000/healthz"]
+      start_period: 15s
+      interval: 15s
+      retries: 3
+      timeout: 5s
+    networks:
+      - app
+      - postgres
+
+networks:
+  postgres:
+    external: true
+  app:
+    name: firezone-app
