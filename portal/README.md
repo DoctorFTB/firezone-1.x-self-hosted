@@ -3,12 +3,10 @@
 ## Preparation
 
 1. Install [docker](https://docs.docker.com/engine/install/)
-2. Set up access to the Docker registry (GitLab Registry).
-   - For example, using the `docker login` command
-3. Copy the `.env custom-seeds.exs docker-compose.*.yml` files from the repository to the server
+2. Copy the `.env custom-seeds.exs docker-compose.*.yml` files from the repository to the server
    - Via wget: ``wget `for name in .env custom-seeds.exs docker-compose.{portal,postgres}.yml; do echo "https://raw.githubusercontent.com/DoctorFTB/firezone-1.x-self-hosted/main/portal/$name"; done` ``
-4. Configure the `.env` and `custom-seeds.exs` files (you must replace all lines with the text `REPLACE-ME`)
-5. Pull all needed docker images
+3. Configure the `.env` and `custom-seeds.exs` files (you must replace all lines with the text `REPLACE-ME`)
+4. Pull all needed docker images
    - `docker compose -f docker-compose.postgres.yml pull`
    - `docker compose -f docker-compose.portal.yml pull`
 
