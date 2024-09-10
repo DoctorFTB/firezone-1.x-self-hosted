@@ -10,10 +10,12 @@ services:
       - 127.0.0.1:8080:8080/tcp
     environment:
       # Database
-      DATABASE_HOST: postgres
+      DATABASE_HOST: ${POSTGRES_HOST:-postgres}
+      DATABASE_PORT: ${POSTGRES_PORT:-5432}
       DATABASE_NAME: ${POSTGRES_DB:?err}
       DATABASE_USER: ${POSTGRES_USER:?err}
       DATABASE_PASSWORD: ${POSTGRES_PASSWORD:?err}
+
       # Secrets
       TOKENS_KEY_BASE: ${TOKENS_KEY_BASE:?err}
       TOKENS_SALT: ${TOKENS_SALT:?err}
@@ -21,6 +23,7 @@ services:
       LIVE_VIEW_SIGNING_SALT: ${LIVE_VIEW_SIGNING_SALT:?err}
       COOKIE_SIGNING_SALT: ${COOKIE_SIGNING_SALT:?err}
       COOKIE_ENCRYPTION_SALT: ${COOKIE_ENCRYPTION_SALT:?err}
+
       # Erlang
       ERLANG_DISTRIBUTION_PORT: 9000
       ERLANG_CLUSTER_ADAPTER: "Elixir.Cluster.Strategy.Epmd"
@@ -28,22 +31,33 @@ services:
       RELEASE_COOKIE: ${RELEASE_COOKIE:?err}
       RELEASE_HOSTNAME: "web.cluster.local"
       RELEASE_NAME: "web"
+
       # Auth
       AUTH_PROVIDER_ADAPTERS: ${AUTH_PROVIDER_ADAPTERS:?err}
+
+      # Emails
+      OUTBOUND_EMAIL_FROM: "firezone@no.op"
+
       # Feature Flags
       FEATURE_FLOW_ACTIVITIES_ENABLED: "true"
-      FEATURE_SELF_HOSTED_RELAYS_ENABLED: "true"
       FEATURE_POLICY_CONDITIONS_ENABLED: "true"
       FEATURE_MULTI_SITE_RESOURCES_ENABLED: "true"
+      FEATURE_SELF_HOSTED_RELAYS_ENABLED: "true"
+      FEATURE_IDP_SYNC_ENABLED: "true"
       FEATURE_SIGN_UP_ENABLED: "true"
-      FEATURE_REST_API_ENABLED: "false"
+      FEATURE_REST_API_ENABLED: "true"
+      FEATURE_INTERNET_RESOURCE_ENABLED: "true"
 
       # APP SPECIFIED
+
       # Web Server
-      API_URL_OVERRIDE: wss://api.$DOMAIN
-      EXTERNAL_URL: https://app.$DOMAIN
+      WEB_EXTERNAL_URL: https://app.$DOMAIN/
+      API_EXTERNAL_URL: https://api.$DOMAIN/
       PHOENIX_HTTP_WEB_PORT: "8080"
+      PHOENIX_HTTP_API_PORT: "8081"
       BACKGROUND_JOBS_ENABLED: "false"
+
+      API_URL_OVERRIDE: wss://api.$DOMAIN
     healthcheck:
       test: ["CMD-SHELL", "curl -f localhost:8080/healthz"]
       start_period: 15s
@@ -62,10 +76,12 @@ services:
       - 127.0.0.1:8081:8081/tcp
     environment:
       # Database
-      DATABASE_HOST: postgres
+      DATABASE_HOST: ${POSTGRES_HOST:-postgres}
+      DATABASE_PORT: ${POSTGRES_PORT:-5432}
       DATABASE_NAME: ${POSTGRES_DB:?err}
       DATABASE_USER: ${POSTGRES_USER:?err}
       DATABASE_PASSWORD: ${POSTGRES_PASSWORD:?err}
+
       # Secrets
       TOKENS_KEY_BASE: ${TOKENS_KEY_BASE:?err}
       TOKENS_SALT: ${TOKENS_SALT:?err}
@@ -73,6 +89,7 @@ services:
       LIVE_VIEW_SIGNING_SALT: ${LIVE_VIEW_SIGNING_SALT:?err}
       COOKIE_SIGNING_SALT: ${COOKIE_SIGNING_SALT:?err}
       COOKIE_ENCRYPTION_SALT: ${COOKIE_ENCRYPTION_SALT:?err}
+
       # Erlang
       ERLANG_DISTRIBUTION_PORT: 9000
       ERLANG_CLUSTER_ADAPTER: "Elixir.Cluster.Strategy.Epmd"
@@ -80,8 +97,13 @@ services:
       RELEASE_COOKIE: ${RELEASE_COOKIE:?err}
       RELEASE_HOSTNAME: "api.cluster.local"
       RELEASE_NAME: "api"
+
       # Auth
       AUTH_PROVIDER_ADAPTERS: ${AUTH_PROVIDER_ADAPTERS:?err}
+
+      # Emails
+      OUTBOUND_EMAIL_FROM: "firezone@no.op"
+
       # Feature Flags
       FEATURE_FLOW_ACTIVITIES_ENABLED: "true"
       FEATURE_SELF_HOSTED_RELAYS_ENABLED: "true"
@@ -91,8 +113,11 @@ services:
       FEATURE_REST_API_ENABLED: "false"
 
       # APP SPECIFIED
+
       # Web Server
-      EXTERNAL_URL: https://api.$DOMAIN
+      WEB_EXTERNAL_URL: https://app.$DOMAIN/
+      API_EXTERNAL_URL: https://api.$DOMAIN/
+      PHOENIX_HTTP_WEB_PORT: "8080"
       PHOENIX_HTTP_API_PORT: "8081"
       BACKGROUND_JOBS_ENABLED: "false"
     healthcheck:
@@ -111,10 +136,12 @@ services:
     container_name: firezone-domain
     environment:
       # Database
-      DATABASE_HOST: postgres
+      DATABASE_HOST: ${POSTGRES_HOST:-postgres}
+      DATABASE_PORT: ${POSTGRES_PORT:-5432}
       DATABASE_NAME: ${POSTGRES_DB:?err}
       DATABASE_USER: ${POSTGRES_USER:?err}
       DATABASE_PASSWORD: ${POSTGRES_PASSWORD:?err}
+
       # Secrets
       TOKENS_KEY_BASE: ${TOKENS_KEY_BASE:?err}
       TOKENS_SALT: ${TOKENS_SALT:?err}
@@ -122,6 +149,7 @@ services:
       LIVE_VIEW_SIGNING_SALT: ${LIVE_VIEW_SIGNING_SALT:?err}
       COOKIE_SIGNING_SALT: ${COOKIE_SIGNING_SALT:?err}
       COOKIE_ENCRYPTION_SALT: ${COOKIE_ENCRYPTION_SALT:?err}
+
       # Erlang
       ERLANG_DISTRIBUTION_PORT: 9000
       ERLANG_CLUSTER_ADAPTER: "Elixir.Cluster.Strategy.Epmd"
@@ -129,8 +157,13 @@ services:
       RELEASE_COOKIE: ${RELEASE_COOKIE:?err}
       RELEASE_HOSTNAME: "domain.cluster.local"
       RELEASE_NAME: "domain"
+
       # Auth
       AUTH_PROVIDER_ADAPTERS: ${AUTH_PROVIDER_ADAPTERS:?err}
+
+      # Emails
+      OUTBOUND_EMAIL_FROM: "firezone@no.op"
+
       # Feature Flags
       FEATURE_FLOW_ACTIVITIES_ENABLED: "true"
       FEATURE_SELF_HOSTED_RELAYS_ENABLED: "true"
@@ -140,8 +173,13 @@ services:
       FEATURE_REST_API_ENABLED: "false"
 
       # APP SPECIFIED
+
       # Web Server
-      EXTERNAL_URL: https://api.$DOMAIN
+      WEB_EXTERNAL_URL: https://app.$DOMAIN/
+      API_EXTERNAL_URL: https://api.$DOMAIN/
+      PHOENIX_HTTP_WEB_PORT: "8080"
+      PHOENIX_HTTP_API_PORT: "8081"
+
       # Background Jobs
       BACKGROUND_JOBS_ENABLED: "true"
     healthcheck:

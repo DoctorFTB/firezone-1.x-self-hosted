@@ -12,6 +12,8 @@
     - gateway via systemd
     - relay via systemd (+ extracted from docker image :sad:)
 
+### FireZone doesn't officially support self-hosting.
+
 ## Installation FireZone
 
 - [portal](./portal/README.md)
@@ -27,7 +29,20 @@
 
 ## Updating
 
-- TODO cuz I'm just installing it :smile: I'll update it later
+### FireZone portal
+
+- Use `docker compose -f docker-compose.postgres.yml pull` and restart all containers
+
+### FireZone Gateway
+
+- Two ways:
+  - Remove file "/usr/local/bin/firezone-gateway" and restart systemd service
+    - Service automatically redownload it
+  - Update it manually via download it from FireZone Changelog and put file to "/usr/local/bin/firezone-gateway"
+
+### FireZone Relay
+
+- You need manually reobtain file "/usr/local/bin/firezone-relay" from docker-image
 
 ## Troubleshooting
 
@@ -42,11 +57,4 @@ INFO handle_timeout{id=<id>}: snownet::node: Connection failed (ICE timeout)
 
 ## TODO
 
-### Local
-
 - add info about emails
-
-### Need changes from FireZone
-- use version `1` instead of `latest` for docker images
-- maybe rewrite seeds for the portal (currently we have a hardcoded version 0.1.0 and a duplicate `domain` folder in `/app/lib`)
-- use the relay binary from the official artifact url instead of getting it from the docker image

@@ -10,7 +10,7 @@ account_slug = "REPLACE_ME"
 
 admin_actor_name = "REPLACE-ME"
 admin_actor_email = "REPLACE-ME@account.my"
-admin_actor_password = "REPLACE-ME"
+admin_actor_password = "REPLACE-ME-MIN-12-SYMBOLS"
 
 relay_group_name = "REPLACE-ME"
 site_name = "REPLACE-ME"
@@ -32,7 +32,8 @@ account
     traffic_filters: true,
     self_hosted_relays: true,
     idp_sync: true,
-    rest_api: false
+    rest_api: true,
+    internet_resource: true
   },
   limits: %{
     # The devil is here... Shh...
