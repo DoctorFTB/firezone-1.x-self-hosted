@@ -55,6 +55,13 @@ INFO accept_connection{id=<id>}: snownet::node: Created new connection
 INFO handle_timeout{id=<id>}: snownet::node: Connection failed (ICE timeout)
 ```
 
+## KNOWN ISSUES
+
+### At least two relays for setup
+
+- FireZone uses relay to communicate with the portal, because of this it needs at least 2 relays 
+
 ## TODO
 
 - add info about emails
+- two relay setup
