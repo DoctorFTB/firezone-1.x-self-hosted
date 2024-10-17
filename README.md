@@ -65,9 +65,10 @@ INFO handle_timeout{id=<id>}: snownet::node: Connection failed (ICE timeout)
 
 ### 10.17.2024 Two relay setup
 
-- Previously only one relay was installed, you need at least two relays to work properly2
+- Previously only one relay was installed, you need at least two relays to work properly after partial restart
+  - upstream issue: https://github.com/firezone/firezone/issues/6648
 - You can run the command below to migrate (if you have installed FireZone through this repository before)
-- `bash <(curl -fsSL https://raw.githubusercontent.com/DoctorFTB/firezone-1.x-self-hosted/main/relay/two-relay-migrate.sh)`
+  - `bash <(curl -fsSL https://raw.githubusercontent.com/DoctorFTB/firezone-1.x-self-hosted/main/relay/two-relay-migrate.sh)`
 
 ## TODO
 
