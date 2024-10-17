@@ -75,7 +75,8 @@ WantedBy=multi-user.target
 EOF
 
 # Create second relay systemd unit file with changed LOWEST_PORT and HIGHEST_PORT env
-sed /etc/systemd/system/firezone-relay-1.service 's/49152/57344/; s/57343/65535/' > /etc/systemd/system/firezone-relay-2.service
+sed /etc/systemd/system/firezone-relay-1.service 's/LOWEST_PORT=49152/LOWEST_PORT=57344/;
+s/HIGHEST_PORT=57343/HIGHEST_PORT=65535/' > /etc/systemd/system/firezone-relay-2.service
 
 # Create ExecStartPre script
 sudo cat > /usr/local/bin/firezone-relay-init <<EOF
