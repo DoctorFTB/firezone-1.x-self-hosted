@@ -41,7 +41,7 @@ sudo groupadd -f firezone
 id -u firezone &>/dev/null || sudo useradd -r -g firezone -s /sbin/nologin firezone
 
 # Create systemd unit file
-sudo cat > /etc/systemd/system/firezone-relay.service <<EOF
+sudo cat > /etc/systemd/system/firezone-relay-1.service <<EOF
 [Unit]
 Description=Firezone Relay
 After=network.target
@@ -55,11 +55,13 @@ Environment="FIREZONE_TOKEN=$FIREZONE_TOKEN"
 Environment="FIREZONE_API_URL=$FIREZONE_API_URL"
 Environment="PUBLIC_IP4_ADDR=$PUBLIC_IP4_ADDR"
 ${PUBLIC_IP6_ADDR_COMMENT}Environment="PUBLIC_IP6_ADDR=$PUBLIC_IP6_ADDR"
+Environment="LOWEST_PORT=49152"
+Environment="HIGHEST_PORT=57343"
 Environment="RUST_LOG=$RUST_LOG"
 Environment="RUST_LOG_STYLE=never"
 ExecStartPre=/usr/local/bin/firezone-relay-init
 ExecStart=/usr/bin/sudo \
-  --preserve-env=FIREZONE_NAME,FIREZONE_ID,FIREZONE_TOKEN,FIREZONE_API_URL,PUBLIC_IP4_ADDR,PUBLIC_IP6_ADDR,RUST_LOG,RUST_LOG_STYLE \
+  --preserve-env=FIREZONE_NAME,FIREZONE_ID,FIREZONE_TOKEN,FIREZONE_API_URL,PUBLIC_IP4_ADDR,PUBLIC_IP6_ADDR,LOWEST_PORT,HIGHEST_PORT,RUST_LOG,RUST_LOG_STYLE \
   -u firezone \
   -g firezone \
   /usr/local/bin/firezone-relay
@@ -71,6 +73,10 @@ RestartSec=7
 [Install]
 WantedBy=multi-user.target
 EOF
+
+# Create second relay systemd unit file with changed LOWEST_PORT and HIGHEST_PORT env
+sed /etc/systemd/system/firezone-relay-1.service 's/LOWEST_PORT=49152/LOWEST_PORT=57344/;
+s/HIGHEST_PORT=57343/HIGHEST_PORT=65535/' > /etc/systemd/system/firezone-relay-2.service
 
 # Create ExecStartPre script
 sudo cat > /usr/local/bin/firezone-relay-init <<EOF
@@ -99,10 +105,12 @@ sudo chmod +x /usr/local/bin/firezone-relay-init
 sudo systemctl daemon-reload
 
 # Enable the service to start on boot
-sudo systemctl enable firezone-relay
+sudo systemctl enable firezone-relay-1
+sudo systemctl enable firezone-relay-2
 
 # Start the service
-sudo systemctl start firezone-relay
+sudo systemctl start firezone-relay-1
+sudo systemctl start firezone-relay-2
 
-echo "Run 'sudo systemctl status firezone-relay' to check the status."
-echo "Run 'sudo journalctl -xeu firezone-relay.service' to check the logs."
+echo "Run 'sudo systemctl status firezone-relay-1' and 'sudo systemctl status firezone-relay-2' to check the status."
+echo "Run 'sudo journalctl -xeu firezone-relay-1.service' and 'sudo journalctl -xeu firezone-relay-2.service' to check the logs."
