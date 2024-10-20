@@ -33,8 +33,8 @@ sed -i 's/^\(Environment="RUST_LOG=\)/Environment="LOWEST_PORT=49152"\nEnvironme
 s/\(,RUST_LOG,\)/,LOWEST_PORT,HIGHEST_PORT\1/' /etc/systemd/system/firezone-relay-1.service
 
 # Create second relay systemd unit file with changed LOWEST_PORT and HIGHEST_PORT env
-sed /etc/systemd/system/firezone-relay-1.service 's/LOWEST_PORT=49152/LOWEST_PORT=57344/;
-s/HIGHEST_PORT=57343/HIGHEST_PORT=65535/' > /etc/systemd/system/firezone-relay-2.service
+sed 's/LOWEST_PORT=49152/LOWEST_PORT=57344/;s/HIGHEST_PORT=57343/HIGHEST_PORT=65535/' \
+/etc/systemd/system/firezone-relay-1.service > /etc/systemd/system/firezone-relay-2.service
 
 # Reload systemd
 sudo systemctl daemon-reload
