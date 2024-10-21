@@ -25,12 +25,12 @@ docker run \
 
 ## Configure firewall
 
-- You need to open `3478/udp` and `49152:65535/udp` for the server with the gateway and for each FireZone client
+- You need to open `3478:3479/udp` and `49152:65535/udp` for the server with the gateway and for each FireZone client
 
 ### Sample for `ufw`:
 
 ```bash
-ufw allow from $ip to any port 3478 proto udp
+ufw allow from $ip to any port 3478:3479 proto udp
 ufw allow from $ip to any port 49152:65535 proto udp
 ```
 

@@ -57,6 +57,7 @@ Environment="PUBLIC_IP4_ADDR=$PUBLIC_IP4_ADDR"
 ${PUBLIC_IP6_ADDR_COMMENT}Environment="PUBLIC_IP6_ADDR=$PUBLIC_IP6_ADDR"
 Environment="LOWEST_PORT=49152"
 Environment="HIGHEST_PORT=57343"
+Environment="LISTEN_PORT=3478"
 Environment="RUST_LOG=$RUST_LOG"
 Environment="RUST_LOG_STYLE=never"
 ExecStartPre=/usr/local/bin/firezone-relay-init
@@ -75,7 +76,7 @@ WantedBy=multi-user.target
 EOF
 
 # Create second relay systemd unit file with changed LOWEST_PORT and HIGHEST_PORT env
-sed 's/LOWEST_PORT=49152/LOWEST_PORT=57344/;s/HIGHEST_PORT=57343/HIGHEST_PORT=65535/' \
+sed 's/LOWEST_PORT=49152/LOWEST_PORT=57344/;s/HIGHEST_PORT=57343/HIGHEST_PORT=65535/;s/LISTEN_PORT=3478/LISTEN_PORT=3479/' \
 /etc/systemd/system/firezone-relay-1.service > /etc/systemd/system/firezone-relay-2.service
 
 # Create ExecStartPre script
